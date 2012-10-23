@@ -23,6 +23,9 @@ public class RuleGenerator {
 		String[] tokens = line.split(" ");
 		String categoryName = tokens[0];
 		Category c = hierarchy.getCategoryByName(categoryName);
+		if (c == null) {
+			throw new RuntimeException("Category " + categoryName + " does not exists!");
+		}
 		String[] keywords = Arrays.copyOfRange(tokens, 1, tokens.length);
 		return new Rule(keywords, c);
 	}

@@ -1,5 +1,6 @@
 package query;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 
@@ -8,7 +9,7 @@ import java.util.Vector;
  *  and summarize the result in ProbeResult
  *  including both matches and a vector of topK result
  */
-public class ProbeResult {
+public class ProbeResult implements Serializable {
 	private int matches;
 	private Vector<QueryRecord> records;
 
@@ -24,4 +25,10 @@ public class ProbeResult {
 	public Vector<QueryRecord> getRecords() {
 		return records;
 	}
+
+	@Override
+	public String toString() {
+		return "ProbeResult [matches=" + matches + "]";
+	}
+
 }

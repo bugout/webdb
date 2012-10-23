@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
+
+import query.ProbeResult;
+import query.QueryRecord;
 
 import searcher.BingSearchProvider;
 import searcher.SearchProvider;
@@ -15,59 +19,28 @@ import database.Database;
 import database.SearchDatabase;
 
 public class DatabaseClassifier {
-	private static String rulefile = "rules.txt";
-	private static String apiKey;
-	
+
+	private String apiKey;	
 	private Category root = null;
 	
-	public DatabaseClassifier(Category hierarchy) {
-		root = hierarchy;
-	}
+	private Map<Category, Set<String>> sampleUrls = null;
 	
-	public static void main(String[] args) {
-		/* read arguments */		
-		if (args.length < 4) {
-			System.err.println("Usage: DatabaseClassifier <ApiKey> <min_speciality> <min_coverage> <hostname>");
-			System.exit(1);
-		}
-		apiKey = args[0];
-		
-		double mincoverage = 1, minspeciality = 1;
-		try {
-			minspeciality = Double.parseDouble(args[1]);
-			mincoverage = Double.parseDouble(args[2]);
-		}
-		catch (NumberFormatException e) {
-			System.err.println("Please input a valid argument");
-			System.exit(1);			
-		}
-		String host = args[3];
-		
-		
-		// initialize classifier
-		
-		Category root = HierarchyBuilder.buildHierarchy(rulefile);
-		DatabaseClassifier classifier = new DatabaseClassifier(root);
-		
-		// classify
-		Set<Category> categories = classifier.classify(host, minspeciality, mincoverage);
-		
-		// output result
-		for (Category c : categories)
-			System.out.println(c);
-		
+	public DatabaseClassifier(String apiKey, Category hierarchy) {
+		root = hierarchy;
+		this.apiKey = apiKey;
+		sampleUrls = new HashMap<Category, Set<String>>();
 	}
 	
 	/**
 	 * Implements the algorithm in Fig. 4
 	 * @param parent
-	 * @param d
+	 * @param db
 	 * @param minspeciality
 	 * @param mincoverage
 	 * @param parentSpeciality
 	 * @return
 	 */
-	private Set<Category> doClassify(Category parent, Database d, double minspeciality, double mincoverage, double parentSpeciality) {
+	private Set<Category> doClassify(Category parent, Database db, double minspeciality, double mincoverage, double parentSpeciality) {
 		
 		Set<Category> result = new HashSet<Category>();
 		
@@ -82,7 +55,8 @@ public class DatabaseClassifier {
 			coverages.put(sub, 0);
 		}		
 		for (Rule rule : parent.getRules()) {
-			int matches = d.probe(rule.getKeywords());
+			ProbeResult pr = db.probe(rule.getKeywords());
+			int matches = pr.getMatch();
 			coverages.put(rule.getCategory(), coverages.get(rule.getCategory()) + matches);
 		}
 		
@@ -98,8 +72,12 @@ public class DatabaseClassifier {
 		
 		// recursive push down
 		for (Category sub : parent.getChildren()) {
-			if (specialities.get(sub) > minspeciality && coverages.get(sub) > mincoverage) {
-				result.addAll(doClassify(sub, d, minspeciality, mincoverage, specialities.get(sub)));				
+			if (specialities.get(sub) > minspeciality && coverages.get(sub) > mincoverage) {							
+				result.addAll(doClassify(sub, db, minspeciality, mincoverage, specialities.get(sub)));	
+				
+				
+				collectSamples(db, parent);
+				
 			}
 		}
 		
@@ -116,12 +94,36 @@ public class DatabaseClassifier {
 		return parentSpeciality * myCoverage / totalCoverage;
 	}
 
-	public Set<Category> classify(String host, double speciality, double coverage) {
-		// construct database;
-		SearchProvider provider = new BingSearchProvider(apiKey, 10); // topK doesn't matter
-		Database d = new SearchDatabase(host, provider);
-					
-		return doClassify(root, d, speciality, coverage, 1);
+	public Set<Category> classify(String host, Database db, double speciality, double coverage) {
+		return doClassify(root, db, speciality, coverage, 1);
 	}	
+	
+	private void collectSamples(Database db, Category c) {
+		if (sampleUrls.containsKey(c))
+			return;
+		
+		Set<String> urls = new HashSet<String>();
+		
+		for (Rule rule : c.getRules()) {
+			ProbeResult pr = db.probe(rule.getKeywords());
+			Vector<QueryRecord> records = pr.getRecords();
+			
+			int sampleSize = Math.min(4, records.size());
+			for (int i = 0; i < sampleSize; i++) {
+				urls.add(records.get(i).getUrl());
+			}
+		}
+		sampleUrls.put(c, urls);
+	}
+	
+	public Set<String> getSampleUrls(Category c) {
+		// copy constructor
+//		Set<String> urls = new HashSet<String>(sampleUrls.get(c));
+//		while (!c.isLeaf()) {
+//			 c.getChildren();
+//			urls.addAll(sampleUrls.get(c));
+//		}		
+		return sampleUrls.get(c);
+	}
 	
 }

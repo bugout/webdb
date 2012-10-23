@@ -7,7 +7,6 @@ import java.io.IOException;
 public class Logger {
 	
 	private static Logger instance = null;
-	private FileWriter log = null ;
 	private FileWriter errorLog = null;
 	
 	public enum MsgType {
@@ -15,8 +14,7 @@ public class Logger {
 	};
 	
 	protected Logger() throws IOException {
-		log = new FileWriter(new File("Transcript_Log.txt"), false);
-		errorLog = new FileWriter(new File("IR_Debug_Log.txt"), false);
+		errorLog = new FileWriter(new File("error.log"), false);
 	}
 	
 	public static Logger getInstance() {
@@ -35,11 +33,7 @@ public class Logger {
 	public void write(String msg, MsgType type) {
 		
 		try {
-			if (MsgType.LOG == type) {
-				log.write(msg + '\n');
-				log.flush();
-			}
-			else if (MsgType.DEBUG == type) {
+			if (MsgType.DEBUG == type) {
 				errorLog.write(msg + '\n');
 				errorLog.flush();
 			}
@@ -50,7 +44,6 @@ public class Logger {
 	}
 	
 	public void close() throws IOException {
-		log.close();
 		errorLog.close();
 	}
 }

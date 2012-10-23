@@ -14,6 +14,16 @@ public class Category {
 		this.parent = parent;
 	}
 	
+	public void printTree(int level) {
+		for (int i = 0; i < level; i++) {
+			System.out.print('\t');
+		}
+		System.out.println(getName());
+		for (Category sub : getChildren()) {
+			sub.printTree(level + 1);
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "Category [name=" + name + "]";

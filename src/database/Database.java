@@ -1,7 +1,9 @@
 package database;
 
+import query.ProbeResult;
+
 public abstract class Database {
-	private String host;
+	protected String host;
 	
 	public Database(String host) {
 		this.host = host;
@@ -16,5 +18,7 @@ public abstract class Database {
 	 * @param keywords
 	 * @return number of matches of the probe
 	 */
-	public abstract int probe(String[] keywords);
+	public abstract ProbeResult probe(String[] keywords);
+	
+	public abstract void close();
 }

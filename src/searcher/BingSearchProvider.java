@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -65,6 +66,9 @@ public class BingSearchProvider extends SearchProvider {
 	
 	// return an xml file of the query result
 	public String search(String[] query, String host) throws IOException{
+		
+		System.out.println("Querying: " + Arrays.toString(query));
+		
 		byte[] accountKeyBytes = Base64.encodeBase64((apiKey + ":" + apiKey).getBytes());
 		String accountKeyEnc = new String(accountKeyBytes);
 

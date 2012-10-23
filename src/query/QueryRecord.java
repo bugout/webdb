@@ -1,12 +1,14 @@
 package query;
 
+import java.io.Serializable;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import util.Logger;
 import util.Logger.MsgType;
 
-public class QueryRecord {
+public class QueryRecord implements Serializable {
 	
 	private String title;
 	private String url;
