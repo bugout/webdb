@@ -1,15 +1,8 @@
 import hierarchy.Category;
 import hierarchy.HierarchyBuilder;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import query.ProbeResult;
 
 import classifier.DatabaseClassifier;
 import database.Database;
@@ -17,13 +10,18 @@ import database.SearchDatabase;
 import searcher.BingSearchProvider;
 import searcher.SearchProvider;
 import summarizer.ContentSummarizer;
+import util.Logger;
+import util.Logger.MsgType;
 
 
 public class Test {
 	private static String rulefile = "rules.txt";
 	
 	public static void main(String[] args) {
-		// read arguments		
+		// read arguments
+		
+		Logger myLogger = Logger.getInstance();
+		
 		if (args.length < 4) {
 			System.err.println("Usage: DatabaseClassifier <ApiKey> <min_speciality> <min_coverage> <hostname>");
 			System.exit(1);
@@ -31,9 +29,21 @@ public class Test {
 		String apiKey = args[0];
 		
 		double mincoverage = 1, minspeciality = 1;
+		
 		try {
 			minspeciality = Double.parseDouble(args[1]);
 			mincoverage = Double.parseDouble(args[2]);
+			
+			if (minspeciality < 0 || minspeciality > 1) {
+				System.err.println("Please input a minspeciality between [0,1]");
+				System.exit(1);	
+			}
+			
+			if (mincoverage < 1) {
+				System.err.println("Mincoverage value can't be less than 1");
+				System.exit(1);	
+			}
+			
 		}
 		catch (NumberFormatException e) {
 			System.err.println("Please input a valid argument");
@@ -42,13 +52,14 @@ public class Test {
 		String host = args[3];
 		
 		// initialize classifier
-		
 		Category root = HierarchyBuilder.buildHierarchy(rulefile);
-				
+		
+		//tree is printed in the debug file
 		root.printTree(0);
 		
 		DatabaseClassifier classifier = new DatabaseClassifier(apiKey, root);
 		
+		System.out.println("Classifying...");
 		
 		// classify
 		SearchProvider provider = new BingSearchProvider(apiKey, 10); // topK doesn't matter
@@ -62,22 +73,26 @@ public class Test {
 		
 		db.close();
 		
+		System.out.println("Preparing Content Summary...");
 		
 		// content summary
 		ContentSummarizer summarizer = new ContentSummarizer(host);
+		
+		//content summaries need to be evaluated for all the categories determined for the host
 		for (Category c : categories) {
 			// no query associated with leaf category, starting from its parent
 			if (c.isLeaf())
 				c = c.getParent();
 			Set<String> samples = new HashSet<String>();
+			myLogger.write("Preparing Summary for: " + c.getName(), MsgType.LOG);
 			do {
 				samples.addAll(classifier.getSampleUrls(c));
 				summarizer.summarize(c, host, samples);
-				System.out.println("urls for " + c.getName() + " " + samples.size() + " pages");
+				myLogger.write("urls for " + c.getName() + ": " + samples.size() + " pages", MsgType.LOG);
 				for (String url : samples) {
-					System.out.println(url);
+					myLogger.write(url, MsgType.LOG);
 				}
-				System.out.println("----------");
+				myLogger.write("----------", MsgType.LOG);
 				c = c.getParent();
 			} while (c != null);
 		}
