@@ -1,5 +1,7 @@
 package hierarchy;
 
+import java.util.Arrays;
+
 
 
 public final class Rule {
@@ -19,4 +21,12 @@ public final class Rule {
 		return category;				
 	}
 	
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[ Category: " + category.getName());
+		sb.append(", Query: " + Arrays.toString(keywords));
+		sb.append(" ]");
+		
+		return sb.toString();
+	}
 }
