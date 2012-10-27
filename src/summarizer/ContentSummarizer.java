@@ -50,6 +50,7 @@ public class ContentSummarizer {
 				output.write(wordFreq.getKey() + "#" + String.format("%.1f", 1.0 * wordFreq.getValue()));
 				output.newLine();
 			}
+			output.flush();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
