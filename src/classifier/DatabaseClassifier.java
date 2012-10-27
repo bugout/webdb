@@ -60,6 +60,8 @@ public class DatabaseClassifier {
 			coverages.put(rule.getCategory(), coverages.get(rule.getCategory()) + matches);
 		}
 		
+		collectSamples(db, parent);
+		
 		// calculate ESpeciality
 		int totalCoverage = 0;
 		for (Integer c : coverages.values()) {
@@ -74,12 +76,9 @@ public class DatabaseClassifier {
 		for (Category sub : parent.getChildren()) {
 			if (specialities.get(sub) > minspeciality && coverages.get(sub) > mincoverage) {							
 				result.addAll(doClassify(sub, db, minspeciality, mincoverage, specialities.get(sub)));	
-				
-				
-				collectSamples(db, parent);
-				
 			}
 		}
+		
 		
 		if (result.isEmpty()) {
 			result.add(parent);
