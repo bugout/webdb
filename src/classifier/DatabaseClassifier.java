@@ -15,6 +15,8 @@ import query.QueryRecord;
 
 import searcher.BingSearchProvider;
 import searcher.SearchProvider;
+import util.Logger;
+import util.Logger.MsgType;
 import database.Database;
 import database.SearchDatabase;
 
@@ -24,6 +26,8 @@ public class DatabaseClassifier {
 	private Category root = null;
 	
 	private Map<Category, Set<String>> sampleUrls = null;
+	
+	private Logger myLogger = Logger.getInstance();
 	
 	public DatabaseClassifier(String apiKey, Category hierarchy) {
 		root = hierarchy;
@@ -42,8 +46,14 @@ public class DatabaseClassifier {
 	 */
 	private Set<Category> doClassify(Category parent, Database db, double minspeciality, double mincoverage, double parentSpeciality) {
 		
+		myLogger.write("Analyzing Node: " + parent.getName(), MsgType.LOG);
+		
+		for ( Category sub : parent.getChildren() ) 
+			myLogger.write("  SubCategory: " + sub.getName(), MsgType.LOG);
+		
 		Set<Category> result = new HashSet<Category>();
 		
+		//if parent category is a leaf node, there are no subcategories to analyze
 		if (parent.isLeaf()) {
 			result.add(parent);
 			return result;
@@ -56,13 +66,15 @@ public class DatabaseClassifier {
 		}		
 		for (Rule rule : parent.getRules()) {
 			ProbeResult pr = db.probe(rule.getKeywords());
+			
+			//log error and move on to the next query
 			if (pr == null)
-			{
-				//log error and move on to the next query
-				System.out.println("Probing failed for " + rule.toString());
+				myLogger.write("Probing failed for " + rule.toString(), MsgType.DEBUG);
+			else {
+				int matches = pr.getMatch();
+				coverages.put(rule.getCategory(), coverages.get(rule.getCategory()) + matches);
 			}
-			int matches = pr.getMatch();
-			coverages.put(rule.getCategory(), coverages.get(rule.getCategory()) + matches);
+			
 		}
 		
 		collectSamples(db, parent);
@@ -71,7 +83,10 @@ public class DatabaseClassifier {
 		int totalCoverage = 0;
 		for (Integer c : coverages.values()) {
 			totalCoverage += c;
-		}		
+		}
+		
+		myLogger.write("Total Coverage: " + totalCoverage, MsgType.LOG);
+		
 		Map<Category, Double> specialities = new HashMap<Category, Double>();
 		for (Category sub : parent.getChildren()) {
 			specialities.put(sub, calculateSpeciality(coverages.get(sub),parentSpeciality, totalCoverage));
