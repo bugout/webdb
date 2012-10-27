@@ -56,6 +56,11 @@ public class DatabaseClassifier {
 		}		
 		for (Rule rule : parent.getRules()) {
 			ProbeResult pr = db.probe(rule.getKeywords());
+			if (pr == null)
+			{
+				//log error and move on to the next query
+				System.out.println("Probing failed for " + rule.toString());
+			}
 			int matches = pr.getMatch();
 			coverages.put(rule.getCategory(), coverages.get(rule.getCategory()) + matches);
 		}
