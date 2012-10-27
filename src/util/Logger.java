@@ -8,6 +8,7 @@ public class Logger {
 	
 	private static Logger instance = null;
 	private FileWriter errorLog = null;
+	private FileWriter runLog = null;
 	
 	public enum MsgType {
 		LOG, DEBUG
@@ -15,6 +16,7 @@ public class Logger {
 	
 	protected Logger() throws IOException {
 		errorLog = new FileWriter(new File("error.log"), false);
+		runLog = new FileWriter(new File("run.log"), false);
 	}
 	
 	public static Logger getInstance() {
@@ -36,6 +38,10 @@ public class Logger {
 			if (MsgType.DEBUG == type) {
 				errorLog.write(msg + '\n');
 				errorLog.flush();
+			}
+			else if(MsgType.LOG == type) {
+				runLog.write(msg + '\n');
+				runLog.flush();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
