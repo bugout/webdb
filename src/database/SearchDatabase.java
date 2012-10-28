@@ -1,20 +1,12 @@
 package database;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import cache.ProbeCache;
 
 import query.ProbeResult;
 import query.QueryResultParser;
-import searcher.BingSearchProvider;
+
 import searcher.SearchProvider;
 
 public class SearchDatabase extends Database {
