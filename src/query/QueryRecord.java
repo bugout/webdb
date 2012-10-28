@@ -2,12 +2,6 @@ package query;
 
 import java.io.Serializable;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import util.Logger;
-import util.Logger.MsgType;
-
 public class QueryRecord implements Serializable {
 	
 	private String title;
@@ -15,7 +9,6 @@ public class QueryRecord implements Serializable {
 	private String displayUrl;
 	private String description;
 	private boolean relevant;
-	private String htmlText;
 	
 	public QueryRecord(String title, String url, String displayUrl, String description)
 	{
@@ -24,7 +17,6 @@ public class QueryRecord implements Serializable {
 		this.displayUrl = displayUrl;
 		this.description = description;
 		relevant = false;
-		htmlText = "";
 	}
 	
 	public String getTitle() {
@@ -51,23 +43,6 @@ public class QueryRecord implements Serializable {
 		this.relevant = relevant;
 	}
 	
-
-	public void downloadRelevantPage() {
-		
-		try {
-			Document htmlDoc = Jsoup.connect(url).get();
-			htmlText = htmlDoc.text();
-		}
-		catch (Exception e) {
-			Logger.getInstance().write("Error downloading webpage in QueryRecord : " 
-					+ e.toString(), MsgType.DEBUG);
-		}
-	
-	}
-	
-	public String getHtmlPage() {
-		return htmlText;
-	}
 	
 	public String toString() {
 		
