@@ -1,7 +1,6 @@
 package classifier;
 
 import hierarchy.Category;
-import hierarchy.HierarchyBuilder;
 import hierarchy.Rule;
 
 import java.util.HashMap;
@@ -13,12 +12,9 @@ import java.util.Vector;
 import query.ProbeResult;
 import query.QueryRecord;
 
-import searcher.BingSearchProvider;
-import searcher.SearchProvider;
 import util.Logger;
 import util.Logger.MsgType;
 import database.Database;
-import database.SearchDatabase;
 
 public class DatabaseClassifier {
 
