@@ -8,6 +8,9 @@ import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
 
+import util.Logger;
+import util.Logger.MsgType;
+
 public class BingSearchProvider extends SearchProvider {	
 	private static final String bingUrl = "https://api.datamarket.azure.com/Data.ashx/Bing/SearchWeb/v1/Web?Query=";
 	private static final String bingCompositeUrl = "https://api.datamarket.azure.com/Data.ashx/Bing/SearchWeb/v1/Composite?Query=";
@@ -67,7 +70,7 @@ public class BingSearchProvider extends SearchProvider {
 	// return an xml file of the query result
 	public String search(String[] query, String host) throws IOException{
 		
-		System.out.println("Querying: " + Arrays.toString(query));
+		Logger.getInstance().write("Querying: " + Arrays.toString(query), MsgType.LOG);
 		
 		byte[] accountKeyBytes = Base64.encodeBase64((apiKey + ":" + apiKey).getBytes());
 		String accountKeyEnc = new String(accountKeyBytes);
