@@ -8,6 +8,8 @@ import query.ProbeResult;
 import query.QueryResultParser;
 
 import searcher.SearchProvider;
+import util.Logger;
+import util.Logger.MsgType;
 
 public class SearchDatabase extends Database {
 
@@ -32,7 +34,7 @@ public class SearchDatabase extends Database {
 		ProbeResult r;
 		
 		if ((r = resultCaches.get(keywords)) != null) {			
-			System.out.println("Querying " + Arrays.toString(keywords) + " hits cache");
+			Logger.getInstance().write("Querying " + Arrays.toString(keywords) + " hits cache", MsgType.LOG);
 			return r;
 		}		
 		try {
