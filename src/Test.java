@@ -121,6 +121,7 @@ public class Test {
 			}
 		}
 		
+		//now go through categorySamples and generate the metadata summary for each category 
 		for (String s : categorySamples.keySet())
 		{
 			Category theCategory = root.getCategoryByName(s);
