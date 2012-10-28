@@ -8,7 +8,7 @@
 
 <p>
 ------------------------------------------<br>
-Readme files for CS6111 Project 1<br>
+Readme files for CS6111 Project 2<br>
 Group members:<br>
 Anuj Arora (aa2583)<br>
 Jiacheng Yang (jy2522)<br>
@@ -52,74 +52,64 @@ Jiacheng Yang (jy2522)<br>
 
      - webdb/docs/key: our Bing Api key
 <br>
-
+<br>
 <b>2. How to run?</b>
 <p>
 
    * Compile on clic machines <br>
-     1) Go into directory relevance/ <br>
+     1) Go into directory webdb/src/ <br>
      2) option1: type 'make' <br>
      3) option2: manually compile: <br>
-     	javac -cp ".:lib/*" RelevanceFeedback.java <br>
+     	javac -cp ".:lib/*" Test.java <br>
 
 </p>
 
 <p>
 
    * Run tests <br>
-     1) Go into directory relevance/ <br>
-     2) option 1: run script ./run.sh apikey precision 'query keywords': <br>
-     3) option 2: type make run ARG1=apikey ARG2=precision ARG3='query keywords' <br>
+     1) Go into directory webdb/src <br>
+     2) option 1: run script ./run.sh apikey minspecificity mincoverage host<br>
+     3) option 2: type make run ARG1=apikey ARG2=minspecificity ARG3=mincoverage ARG4=host <br>
      4) option 3: manually run java <br>
-     	java -cp ".:lib/*" RelevanceFeedback apikey
-     	precision 'query keywords' <br>
+     	java -cp ".:lib/*" Test apikey minspecificity mincoverage host <br>
         
-	Example: java -cp ".:lib/*" RelevanceFeedback your-bing-api
-	0.8 'bill gates' <br>
+	Example: java -cp ".:lib/*" test your-bing-api
+	0.6 100 yahoo.com <br>
 
-     5) Interact with the UI for feedbacks and results <br>
-     6) You can also check the result in Transcript_Log.txt <br>
-
+     5) Resulting categories are displayed on screen <br>
+     6) Content summary are captured in text files.  The file names are displayed on the screen<br>
+<br>
 </p>
 <p>
 
 <b>3. System design</b></br>
+<br>
  Our system is decoupled into several modules. The main classTest.java in the default package processes the arguments passed to the and interacts with other modules to determine the category of the host, and generate the content summary.  
 <br><br>
 Following arguments are passed to the main function - <br>
- 
-   interface and interacting with other modules. The main class read
-   user's query from commandline and issue the query to a
-   SearchProvider, in this case, the Bing API. It then presents the
-   query result to user to get feedbacks. If we haven't reach the
-   desired precision, RelevanceFeedback calls an Expander to expand
-   the query and search with the revised query. An expander chooses
-   words to expand based on the results of several analyzers. An
-   analyzer assign a weight to each term according to different
-   statistics of a term, e.g. its frequency in titles/descriptions. An
-   analyzer may depend on some utitly classes to gather the statistics.<br>
+
+1) API Key <br>
+2) min-specificity <br> 
+3) min-coverage <br>
+4) host <br>
 <br>
-   Here, we have two important abstraction. The
-   TermAnalyzer class is an abstract class that is used to assign
-   weights to terms. While the Expander class is an abstract class
-   that take the relevant terms (high weight terms) from term
-   analyzers and decide which words to expand and what is the right order of
-   the keywords.<br>
+The program is broken into following modules - <br>
+1) cache - The classes contained in this module provides caching of the data.  We cache following data - query probe results and sample documents that are collected for each query.  We provide an abstract class for caching, that 'DocumentCache' and 'ProbeCache' classes inherit from.  By providing the abstract class, we can easily add new classes to cache more data by inheriting from the abstract 'cache' class. <br>
 <br>
-   We can easily plug in or replace term analysis and query expansion
-   methods by inheriting the abstract class. We can even mix various
-   methods together by taking advantage of their common interfaces.<br>
+2) Classifier - This module only contains DatabaseClassifier class.  It's the class that is used to by 'main' method in Test.java to classify the host.  <br>
 <br>
-   In the Searcher package, we also have a abstract class for
-   SearchProvider, in case that we may want to use other search
-   engines other than Bing to finish the task.<br>
+3) Database - This module contains classes that are responsible for probing the host database.  Cached data is checked before requesting the data from the host.  If the data can be retrieved from the cache, host is not queried.  If the cache does not contain the data, host is queried and the data is added to cache.  We provide a abstract class here so that we can easily change/add various different probing algorithms without impacting the overall design.<br>
 <br>
-   Some utitlies class about query result parsing, inverted index
-   building can be found in query and indexer package. We also use
-   some third-party libraries to do the mundane jobs (all the
-   libraries we use are listed in the appendix of this doc).<br>
+4) Hierarchy - This module is used to populate the cateogory hierarchy as provided in the project description.  It also contains classes to read and populate the rules associated with each category. <br>
 <br>
-</p>
+5) Query - This module contains the data classes and the parser class to populate the data structures for the results retrieved by probing the host. <br>
+<br>
+6) Searcher - This module contains the classes to populate and execute bing query based on on the query terms associated with a category.  We provide an abstract class here, to further expand it to a different search engine. <br>
+<br>
+7) Summarizer - This module contains the classes to download the webpages and generate the content summary.  Lynx is used to download the webpage as described in the project description. <br>
+<br>
+8) util - this module contains a singleton Logger class to create the run.log and error.log.<br>
+<br>
 
 <b>4. Appendix</b>
 <p>
