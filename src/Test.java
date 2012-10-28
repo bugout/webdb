@@ -61,7 +61,7 @@ public class Test {
 		
 		DatabaseClassifier classifier = new DatabaseClassifier(apiKey, root);
 		
-		System.out.println("Classifying...");
+		System.out.println("Classification in progress (run.log captures the execution)...");
 		
 		// classify
 		SearchProvider provider = new BingSearchProvider(apiKey, 10); // topK doesn't matter
@@ -71,56 +71,59 @@ public class Test {
 		// output result
 		System.out.println("Result: ");
 		for (Category c : categories)
-			System.out.println(c);
+			System.out.println("    " + c);
 		
 		db.close();
 		
-		System.out.println("Preparing Content Summary...");
+		System.out.println("Content Summary Classification in progress (run.log captures the execution)...");
 		
 		// content summary
 		ContentSummarizer summarizer = new ContentSummarizer(host);
 		
 		//content summaries need to be evaluated for all the categories determined for the host
 		/*
-		 * create samples for all categories and their ancestors
+		 * this algorithm works for our case, for the given category tree structure we have
+		 * It can be modified to make it generic
+		 * 
 		 */
 		Map<String, Set<String>> categorySamples = new HashMap<String, Set<String>>();
 		
 		for (Category c : categories) {
 			
-			myLogger.write("Analyzing " + c.getName(), MsgType.LOG);
-			myLogger.write("****************************************", MsgType.LOG);
-			
-			//since the leaf has no queries associated with them
-			//analyze the parent of the leaf
-			//it is possible that the two leaf nodes are in the category list, in that 
-			//case we don't want to analyze the parent node twice
 			if (c.isLeaf()) {
 				c = c.getParent();
 				if (categorySamples.containsKey(c.getName())) 
 					c = null;
 			}
 										
-			Set<String> samples = new HashSet<String>();
 			
+			Set<String> tempSamples = new HashSet<String>();
 			while (c != null)
 			{
+				//Logger.getInstance().write(c + " " + classifier.getSampleUrls(c).size(), MsgType.LOG);
+				
+				Set<String> samples = new HashSet<String>();
+				samples.addAll(tempSamples);
 				samples.addAll( classifier.getSampleUrls(c) );
-				//
+				
 				if (categorySamples.get(c.getName()) == null)
-				{
-					myLogger.write("initially adding to " + c.getName() + " " + samples.size(), MsgType.LOG);
+				{	
 					categorySamples.put(c.getName(), samples);
+					tempSamples.addAll(samples);
 				}
 				else {
 					samples.addAll(categorySamples.get(c.getName()));
-					myLogger.write("Adding to " + c.getName() + " " + samples.size(), MsgType.LOG);
 					categorySamples.put(c.getName(), samples);
 				}
 				c = c.getParent();
 			}
 		}
 		
+		//for (String s : categorySamples.keySet())
+		//{
+		//	Set<String> theSamples = categorySamples.get(s);
+		//	Logger.getInstance().write(s + " " + theSamples.size(), MsgType.LOG);
+		//}
 		//now go through categorySamples and generate the metadata summary for each category 
 		for (String s : categorySamples.keySet())
 		{
@@ -136,6 +139,8 @@ public class Test {
 		}
 		
 		summarizer.close();
+		
+		System.out.println("run.log contains full pogram run summary");
 	}
 
 }
