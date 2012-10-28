@@ -44,13 +44,17 @@ public class ContentSummarizer {
 	}
 	
 	private void outputSummary(Category c, String host, TreeMap<String, Integer> summary) {
+		
+		String contentSummaryFileName = buildFileName(c, host);
 		try {
-			BufferedWriter output = new BufferedWriter(new FileWriter(buildFileName(c, host)));
+			BufferedWriter output = new BufferedWriter(new FileWriter(contentSummaryFileName));
 			for (Map.Entry<String, Integer> wordFreq : summary.entrySet()) {
 				output.write(wordFreq.getKey() + "#" + String.format("%.1f", 1.0 * wordFreq.getValue()));
 				output.newLine();
 			}
 			output.flush();
+			
+			System.out.println("    Content Summary File Created: " + contentSummaryFileName);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
