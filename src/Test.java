@@ -1,7 +1,9 @@
 import hierarchy.Category;
 import hierarchy.HierarchyBuilder;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import classifier.DatabaseClassifier;
@@ -79,23 +81,59 @@ public class Test {
 		ContentSummarizer summarizer = new ContentSummarizer(host);
 		
 		//content summaries need to be evaluated for all the categories determined for the host
+		/*
+		 * create samples for all categories and their ancestors
+		 */
+		Map<String, Set<String>> categorySamples = new HashMap<String, Set<String>>();
+		
 		for (Category c : categories) {
-			// no query associated with leaf category, starting from its parent
-			if (c.isLeaf())
+			
+			myLogger.write("Analyzing " + c.getName(), MsgType.LOG);
+			myLogger.write("****************************************", MsgType.LOG);
+			
+			//since the leaf has no queries associated with them
+			//analyze the parent of the leaf
+			//it is possible that the two leaf nodes are in the category list, in that 
+			//case we don't want to analyze the parent node twice
+			if (c.isLeaf()) {
 				c = c.getParent();
+				if (categorySamples.containsKey(c.getName())) 
+					c = null;
+			}
+										
 			Set<String> samples = new HashSet<String>();
-			myLogger.write("Preparing Summary for: " + c.getName(), MsgType.LOG);
-			do {
-				samples.addAll(classifier.getSampleUrls(c));
-				summarizer.summarize(c, host, samples);
-				myLogger.write("urls for " + c.getName() + ": " + samples.size() + " pages", MsgType.LOG);
-				for (String url : samples) {
-					myLogger.write(url, MsgType.LOG);
+			
+			while (c != null)
+			{
+				samples.addAll( classifier.getSampleUrls(c) );
+				//
+				if (categorySamples.get(c.getName()) == null)
+				{
+					myLogger.write("initially adding to " + c.getName() + " " + samples.size(), MsgType.LOG);
+					categorySamples.put(c.getName(), samples);
 				}
-				myLogger.write("----------", MsgType.LOG);
+				else {
+					samples.addAll(categorySamples.get(c.getName()));
+					myLogger.write("Adding to " + c.getName() + " " + samples.size(), MsgType.LOG);
+					categorySamples.put(c.getName(), samples);
+				}
 				c = c.getParent();
-			} while (c != null);
+			}
 		}
+		
+		for (String s : categorySamples.keySet())
+		{
+			Category theCategory = root.getCategoryByName(s);
+			Set<String> theSamples = categorySamples.get(s);
+			summarizer.summarize(theCategory, host, theSamples);
+			myLogger.write("urls for " + theCategory.getName() + ": " + theSamples.size() + " pages", MsgType.LOG);
+			for (String url : theSamples) {
+				myLogger.write(url, MsgType.LOG);
+			}
+			myLogger.write("----------", MsgType.LOG);
+			
+		}
+		
 		summarizer.close();
 	}
 
