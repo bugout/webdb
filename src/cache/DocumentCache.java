@@ -6,11 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import query.ProbeResult;
+import java.util.HashMap;
 
 public class DocumentCache extends Cache<String, String> {
 
