@@ -42,11 +42,6 @@ public class DatabaseClassifier {
 	 */
 	private Set<Category> doClassify(Category parent, Database db, double minspeciality, double mincoverage, double parentSpeciality) {
 		
-		myLogger.write("Analyzing Node: " + parent.getName(), MsgType.LOG);
-		
-		for ( Category sub : parent.getChildren() ) 
-			myLogger.write("  SubCategory: " + sub.getName(), MsgType.LOG);
-		
 		Set<Category> result = new HashSet<Category>();
 		
 		//if parent category is a leaf node, there are no subcategories to analyze
