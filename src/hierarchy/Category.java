@@ -3,6 +3,9 @@ package hierarchy;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.Logger;
+import util.Logger.MsgType;
+
 public class Category {
 	private Category parent = null;
 	private List<Category> children = new ArrayList<Category>();
@@ -15,10 +18,12 @@ public class Category {
 	}
 	
 	public void printTree(int level) {
+		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < level; i++) {
-			System.out.print('\t');
+			sb.append('\t');
 		}
-		System.out.println(getName());
+		sb.append(getName());
+		Logger.getInstance().write(sb.toString(), MsgType.LOG);
 		for (Category sub : getChildren()) {
 			sub.printTree(level + 1);
 		}
