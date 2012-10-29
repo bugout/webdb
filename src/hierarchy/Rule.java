@@ -2,7 +2,9 @@ package hierarchy;
 
 import java.util.Arrays;
 
-
+/*
+ * Data class to captures the rules associated with each category
+ */
 
 public final class Rule {
 	private final String[] keywords;
