@@ -18,6 +18,13 @@ public class ProbeCache extends Cache<String[], ProbeResult> {
 	private String cachepath = null;
 	private HashMap<String[], ProbeResult> resultCaches = null;
 	
+	/*
+	 * This class allows caching of the ProbeResult associated with the query
+	 * Read and initialize resultCaches hashmap if there is any previous data available 
+	 * for the specified host
+	 * If previous data is not available, create a cache file that will be populated
+	 * when the close method is called for the DocumentCache 
+	 */	
 	public ProbeCache(String host) {
 		cachepath = basicDir + host + "/" + cacheFileName;				
 		File cachefile = new File(cachepath);
