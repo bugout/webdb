@@ -6,6 +6,10 @@ import java.util.List;
 import util.Logger;
 import util.Logger.MsgType;
 
+/*
+ * Category Data Class is used as a node in the tree 
+ * constructed based on the categories provided in the project description
+ */
 public class Category {
 	private Category parent = null;
 	private List<Category> children = new ArrayList<Category>();
