@@ -8,10 +8,10 @@ run: Test.class
 	java -cp ".:lib/*" RelevanceFeedback "${ARG1}" "${ARG2}" "$(ARG3)" "${ARG4}"
 
 # Or you can run
-# ./run.sh <api-key> <precision> <'query keywords'> 
+# ./run.sh <ApiKey> <min_speciality> <min_coverage> <hostname> 
 
 # Or you can directly run the java command
-#java -cp ".:lib/*" RelevanceFeedback <api-key> <precision> <'query keywords'>
+#java -cp ".:lib/*" Test <ApiKey> <min_speciality> <min_coverage> <hostname>
 
 clean:
 	rm *.class cache/*.class classifier/*.class database/*.class hierarchy/*.class query/*.class searcher/*.class summarizer/*.class util/*.class
