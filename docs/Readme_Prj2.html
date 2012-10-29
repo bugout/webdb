@@ -110,6 +110,20 @@ The program is broken into following modules - <br>
 <br>
 8) util - this module contains a singleton Logger class to create the run.log and error.log.<br>
 <br>
+<br>
+<b>3.1. Data Classification</b><br> 
+The host database is classified based on the algorithm mentioned in the project description.  The category tree is built based on the categories provided in the project.  The category values are hard-coded, but it can easily be changed to read from a xml file.  As the classifier analyzes each category for the host database, it adds top 4 document URLs associated with each rule for the category under inspection.  These URLs are used to create the content summary classification in section 3.2.<br>  
+<br>
+All the data that is retrieved by the querying the host database is cached for reruns.  This includes probing data and documents associated with the category and sample data respectively.  Queries are logged in 'run.log' as the host database is queried. <br>
+<br>
+<b>3.2. Creating Document Summary</b><br>
+The document summary is created based on the algorithm described in the project.  Before initiating the ContentSummarizer, the samples for the parents of the categories under which the host is classified, are aggregated.  Example - if the host is classified under 'Health' and "sports', the 'Root' samples will contain a samples collected for 'Root' plus samples collected for 'Health' plus samples collection for 'Sports'.  We use 'Sets' and 'Maps' to stored the samples as needed.  This helps in eliminating any duplicate values.  <br>
+<br>
+Once we have the final set of samples for all the categories (including parent categories) for which we need to generate content summary, we use the ContentSummarizer object to create content summary for each category.  The ContentSummarizer uses the HtmlParser to download and parse each sample URL.  The HtmlParser is based on Lynx and uses the code that is provided with the project description.  The document frequency is calculated by add each word as it is encountered in a document in a TreeMap.  The key of the TreeMap is the word itself, and value associated with the key is the document frequency.  As each document is parsed, the value of the 'Word' in the TreeMap is incremented.<br>
+<br>
+It should be noed that the documents are cached by the HtmlParser after they are downloaded. 
+<br>
+<br>
 
 <b>4. Appendix</b>
 <p>
