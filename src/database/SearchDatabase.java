@@ -29,6 +29,7 @@ public class SearchDatabase extends Database {
 	}
 
 	@Override
+	//check cache before probing the host database for the query 'keywords'
 	public ProbeResult probe(String[] keywords) {
 		// return from cache
 		ProbeResult r;
