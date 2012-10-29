@@ -5,9 +5,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+
+/*
+ * Read the rules.txt and populate the Category nodes in the Category tree with 
+ * the rules associated with the cateogory
+ */
 
 public class RuleGenerator {
 	private String rulefile = null;
