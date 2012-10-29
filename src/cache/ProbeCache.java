@@ -41,9 +41,11 @@ public class ProbeCache extends Cache<String[], ProbeResult> {
 				
 				filein.close();
 				in.close();
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
-			}			
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
