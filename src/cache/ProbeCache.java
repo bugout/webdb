@@ -13,7 +13,7 @@ import query.ProbeResult;
 
 public class ProbeCache extends Cache<String[], ProbeResult> {
 
-	private static String basicDir = "cache/probes/";
+	private static String basicDir = "cached/probes/";
 	private static String cacheFileName = "probes.bin";
 	private String cachepath = null;
 	private HashMap<String[], ProbeResult> resultCaches = null;

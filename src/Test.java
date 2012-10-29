@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import classifier.ClassifyResult;
 import classifier.DatabaseClassifier;
 import database.Database;
 import database.SearchDatabase;
@@ -17,7 +18,8 @@ import util.Logger.MsgType;
 
 
 public class Test {
-	private static String rulefile = "rules.txt";
+	private final static String hierarchyfile = "hierarchy.xml";
+	private final static String rulefile = "rules.txt";
 	
 	public static void main(String[] args) {
 		// read arguments
@@ -55,7 +57,7 @@ public class Test {
 		String host = args[3];
 		
 		// populate the category tree
-		Category root = HierarchyBuilder.buildHierarchy(rulefile);
+		Category root = HierarchyBuilder.buildHierarchy(hierarchyfile, rulefile);
 		
 		//tree is printed in the debug file
 		root.printTree(0);
@@ -73,12 +75,12 @@ public class Test {
 		Database db = new SearchDatabase(host, provider);
 		
 		//returns a set of categories that the host is classified to
-		Set<Category> categories = classifier.classify(host, db, minspeciality, mincoverage);
+		Set<ClassifyResult> classifyResult = classifier.classify(host, db, minspeciality, mincoverage);
 		
 		// output result
-		System.out.println("Result: ");
-		for (Category c : categories)
-			System.out.println("    " + c);
+		System.out.println("Classification Result: ");
+		for (ClassifyResult r : classifyResult)
+			System.out.println("    " + r.getCategory());
 		
 		db.close();
 		
@@ -102,6 +104,10 @@ public class Test {
 		 * and maps)
 		 */
 		Map<String, Set<String>> categorySamples = new HashMap<String, Set<String>>();
+
+		Set<Category> categories = new HashSet<Category>();
+		for (ClassifyResult r : classifyResult)
+			categories.add(r.getCategory());
 		
 		for (Category c : categories) {
 			

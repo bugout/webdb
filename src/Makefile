@@ -5,7 +5,7 @@ Test.class: Test.java cache/*.java classifier/*.java database/*.java hierarchy/*
 
 # make run ARG1=api-key ARG2=min-specificty ARG3=min-coverage ARG4=host
 run: Test.class
-	java -cp ".:lib/*" RelevanceFeedback "${ARG1}" "${ARG2}" "$(ARG3)" "${ARG4}"
+	java -cp ".:lib/*" Test "${ARG1}" "${ARG2}" "$(ARG3)" "${ARG4}"
 
 # Or you can run
 # ./run.sh <ApiKey> <min_speciality> <min_coverage> <hostname> 

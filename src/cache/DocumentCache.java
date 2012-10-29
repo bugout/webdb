@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class DocumentCache extends Cache<String, String> {
 
-	private static String basicDir = "cache/documents/";
+	private static String basicDir = "cached/documents/";
 	private static String cacheFileName = "documents.bin";
 	private String cachepath = null;
 	private HashMap<String, String> cache = null;

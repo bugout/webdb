@@ -42,6 +42,8 @@ Jiacheng Yang (jy2522)<br>
 
      - webdb/src/rules.txt: rules for query probing<br>
 
+     -webdb/src/hierarchy.xml: the category hierarchy in XML format
+
 <br>
 
 
@@ -112,7 +114,7 @@ The program is broken into following modules - <br>
 <br>
 <br>
 <b>3.1. Data Classification</b><br> 
-The host database is classified based on the algorithm mentioned in the project description.  The category tree is built based on the categories provided in the project.  The category values are hard-coded, but it can easily be changed to read from a xml file.  As the classifier analyzes each category for the host database, it adds top 4 document URLs associated with each rule for the category under inspection.  These URLs are used to create the content summary classification in section 3.2.<br>  
+The host database is classified based on the algorithm mentioned in the project description.  The category tree is built based on the categories provided in the project. We read the category hierarchy from a <b>XML</b> file.  As the classifier analyzes each category for the host database, it adds top 4 document URLs associated with each rule for the category under inspection.  These URLs are used to create the content summary classification in section 3.2.<br>  
 <br>
 All the data that is retrieved by the querying the host database is cached for reruns.  This includes probing data and documents associated with the category and sample data respectively.  Queries are logged in 'run.log' as the host database is queried. <br>
 <br>

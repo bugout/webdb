@@ -104,7 +104,6 @@ public class HtmlParser {
 
 		while (st.hasMoreTokens()) {
 			String tok = st.nextToken();
-			// System.out.println(tok);
 			document.add(tok);
 		}
 		wordCaches.put(url, document);

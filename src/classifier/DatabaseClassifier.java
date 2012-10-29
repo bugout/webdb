@@ -40,13 +40,13 @@ public class DatabaseClassifier {
 	 * @param parentSpeciality
 	 * @return
 	 */
-	private Set<Category> doClassify(Category parent, Database db, double minspeciality, double mincoverage, double parentSpeciality) {
+	private Set<ClassifyResult> doClassify(Category parent, Database db, double minspeciality, double mincoverage, int parentCoverage, double parentSpeciality) {
 		
-		Set<Category> result = new HashSet<Category>();
+		Set<ClassifyResult> result = new HashSet<ClassifyResult>();
 		
 		//if parent category is a leaf node, there are no subcategories to analyze
 		if (parent.isLeaf()) {
-			result.add(parent);
+			result.add(new ClassifyResult(parent, parentCoverage, parentSpeciality));
 			return result;
 		}
 		
@@ -86,13 +86,13 @@ public class DatabaseClassifier {
 		// recursive push down
 		for (Category sub : parent.getChildren()) {
 			if (specialities.get(sub) > minspeciality && coverages.get(sub) > mincoverage) {							
-				result.addAll(doClassify(sub, db, minspeciality, mincoverage, specialities.get(sub)));	
+				result.addAll(doClassify(sub, db, minspeciality, mincoverage, coverages.get(sub), specialities.get(sub)));	
 			}
 		}
 		
 		
 		if (result.isEmpty()) {
-			result.add(parent);
+			result.add(new ClassifyResult(parent, parentCoverage, parentSpeciality));
 			return result;
 		}
 		else
@@ -104,8 +104,8 @@ public class DatabaseClassifier {
 		return parentSpeciality * myCoverage / totalCoverage;
 	}
 
-	public Set<Category> classify(String host, Database db, double speciality, double coverage) {
-		return doClassify(root, db, speciality, coverage, 1);
+	public Set<ClassifyResult> classify(String host, Database db, double speciality, double coverage) {
+		return doClassify(root, db, speciality, coverage, 1, 1);
 	}	
 	
 	private void collectSamples(Database db, Category c) {
