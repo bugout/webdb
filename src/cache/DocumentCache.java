@@ -16,6 +16,13 @@ public class DocumentCache extends Cache<String, String> {
 	private String cachepath = null;
 	private HashMap<String, String> cache = null;
 	
+	/*
+	 * This class allows caching of the document associated with the URL
+	 * Read and initialize cache hashmap if there is any previous data available 
+	 * for the specified host
+	 * If previous data is not available, create a cache file that will be populated
+	 * when the close method is called for the DocumentCache 
+	 */
 	public DocumentCache(String host) {
 		cachepath = basicDir + host + "/" + cacheFileName;				
 		File cachefile = new File(cachepath);
